@@ -13,6 +13,7 @@ $keyczar_ruby_gemspec = Gem::Specification.new do |s|
   s.email = %q{dev-sf@truecar.com}
   s.files = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- {spec}/*`.split("\n")
+  s.extensions = ['ext/keyczar_ruby/extconf.rb']
 #  s.homepage = %q{http://clearbook.truecar.com}
   s.require_paths = [%q{lib}]
   s.rubygems_version = %q{1.8.9}
