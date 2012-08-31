@@ -1,0 +1,7 @@
+*.gem
+.bundle
+Gemfile.lock
+.idea
+pkg/*
+lib/keyczar_ruby.bundle
+tmp
