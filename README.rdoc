@@ -7,7 +7,13 @@ keyczar-cpp in order to use it. Find keyczar-cpp here:
 http://code.google.com/p/keyczar/downloads/list
 
 For now, we assume that keyczar-cpp was installed with the prefix 
-/usr/local.
+/usr/local. You should be able to install it with these commands:
+
+cd keyczar-cpp/src 
+sh ./tools/swtoolkit/hammer.sh --mode=opt-linux --compat
+sh ./tools/swtoolkit/hammer.sh --mode=opt-linux --compat install
+ #  replace opt-linux by opt-bsd or opt-mac depending on your system
+
 
 Methods:
 
