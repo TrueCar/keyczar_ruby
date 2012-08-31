@@ -19,6 +19,13 @@ Keyczar::Signer#verify(text,signature) #=> true or false
 The first 3 return empty string on error. #encrypt and #sign results are
 base64 encoded.
 
+== Installation 
 
+Simple:
 
+  $ gem install keyczar_ruby
+
+For bundler, add it to your Gemfile and run
+
+  $ bundle install
 
