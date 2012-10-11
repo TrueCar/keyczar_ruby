@@ -1,10 +1,4 @@
-A ruby interface to the keyczar crypto library. Provides basic encrypt,
-decrypt, sign and verify methods. 
-
-This is just a wrapper around the c++ version of keyczar. You will need
-keyczar-cpp in order to use it. Find keyczar-cpp here:
-
-http://code.google.com/p/keyczar/downloads/list
+A ruby interface to the keyczar crypto library. Provides basic encrypt, decrypt, sign and verify methods.  This is just a wrapper around the c++ version of keyczar. You will need keyczar-cpp in order to use it. Find keyczar-cpp here: http://code.google.com/p/keyczar/downloads/list
 
 For now, we assume that keyczar-cpp was installed with the prefix 
 /usr/local. You should be able to install it with these commands:
@@ -25,6 +19,9 @@ Methods:
 
 The first 3 return empty string on error. #encrypt and #sign results are
 base64 encoded.
+
+The first 3 return nil when passed nil. 
+The 4th returns false when passed a nil for either text or signature.
 
 == Installation 
 

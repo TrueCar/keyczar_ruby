@@ -19,7 +19,7 @@ $keyczar_ruby_gemspec = Gem::Specification.new do |s|
   s.rubygems_version = %q{1.8.9}
   s.summary = %q{ruby wrapper for keyczar crypto library}
 
-  s.add_development_dependency(%q<bundler>, ["~> 1.1.2"])
+  s.add_development_dependency(%q<bundler>, ["~> 1.2.0"])
   s.add_development_dependency(%q<rspec>, ["~> 2.7.0"])
   s.add_development_dependency(%q<rr>, [">= 0"])
   s.add_development_dependency(%q<rake>, ["~> 0.9.2"])

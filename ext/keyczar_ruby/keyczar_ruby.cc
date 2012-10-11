@@ -62,6 +62,7 @@ extern "C" {
     keyczar::Crypter* crypter;
     Data_Get_Struct(self, keyczar::Crypter, crypter);
 
+    Check_Type(plaintext, T_STRING);
     std::string cryptext=crypter->Encrypt(RSTRING_PTR(plaintext));
 
     return rb_str_new2(cryptext.c_str());
@@ -71,8 +72,8 @@ extern "C" {
     keyczar::Crypter* crypter;
     Data_Get_Struct(self, keyczar::Crypter, crypter);
 
+    Check_Type(cryptext, T_STRING);
     std::string plaintext=crypter->Decrypt(RSTRING_PTR(cryptext));
-
     return rb_str_new2(plaintext.c_str());
   }
 
@@ -80,6 +81,7 @@ extern "C" {
     keyczar::Signer* signer;
     Data_Get_Struct(self, keyczar::Signer, signer);
 
+    Check_Type(text, T_STRING);
     std::string signature=signer->Sign(RSTRING_PTR(text));
 
     return rb_str_new2(signature.c_str());
@@ -89,6 +91,8 @@ extern "C" {
     keyczar::Signer* signer;
     Data_Get_Struct(self, keyczar::Signer, signer);
 
+    Check_Type(text, T_STRING);
+    Check_Type(signature, T_STRING);
     bool result=signer->Verify(RSTRING_PTR(text), RSTRING_PTR(signature));
 
     return result ? Qtrue : Qfalse;
