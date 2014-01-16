@@ -2,60 +2,41 @@
 
 #include "ruby.h"
 
+typedef VALUE (ruby_method)(...);
+
 extern "C" {
-  static VALUE Keyczar = Qnil;
-  static VALUE Signer = Qnil;
-  static VALUE Crypter = Qnil;
+  static VALUE m_Keyczar;
+  static VALUE c_Signer;
+  static VALUE c_Crypter;
 
-  static VALUE keyczar_signer_new(VALUE klass, VALUE location);
-  static VALUE keyczar_crypter_new(VALUE klass, VALUE location);
-
-  static VALUE keyczar_encrypt(VALUE self, VALUE plaintext);
-  static VALUE keyczar_decrypt(VALUE self, VALUE cryptext);
-  static VALUE keyczar_sign(VALUE self, VALUE text);
-  static VALUE keyczar_verify(VALUE self, VALUE text, VALUE signature);
-
-  void Init_keyczar_ruby() {
-    Keyczar = rb_define_module("Keyczar");
-    Signer = rb_define_class_under(Keyczar, "Signer", rb_cObject);
-    Crypter = rb_define_class_under(Keyczar, "Crypter", rb_cObject);
-
-    rb_define_method(Crypter, "encrypt", (VALUE (*)(...))keyczar_encrypt, 1);
-    rb_define_method(Crypter, "decrypt", (VALUE (*)(...))keyczar_decrypt, 1);
-
-    rb_define_method(Signer, "sign", (VALUE (*)(...))keyczar_sign, 1);
-    rb_define_method(Signer, "verify", (VALUE (*)(...))keyczar_verify, 2);
-
-    rb_define_singleton_method(Crypter, "new", (VALUE (*)(...))keyczar_crypter_new, 1);
-    rb_define_singleton_method(Signer, "new", (VALUE (*)(...))keyczar_signer_new, 1);
+  static void keyczar_signer_free(keyczar::Signer *signer){
+    delete signer;
   }
 
-  static void signer_free(keyczar::Signer *ptr){
-    delete ptr;
+  static void keyczar_crypter_free(keyczar::Crypter *crypter){
+    delete crypter;
   }
 
-  static void crypter_free(keyczar::Crypter *ptr){
-    delete ptr;
+  static VALUE keyczar_signer_alloc(VALUE klass){
+    return Data_Wrap_Struct(klass, 0, keyczar_signer_free, 0);
   }
 
-  static VALUE keyczar_signer_new(VALUE klass, VALUE location)
+  static VALUE keyczar_crypter_alloc(VALUE klass){
+    return Data_Wrap_Struct(klass, 0, keyczar_crypter_free, 0);
+  }
+
+  static VALUE keyczar_signer_initialize(VALUE self, VALUE location)
   {
-    VALUE argv[1];
-    keyczar::Signer* ptr = keyczar::Signer::Read(RSTRING_PTR(location));
-    VALUE tdata = Data_Wrap_Struct(klass, 0, signer_free, ptr);
-    argv[0] = location;
-    rb_obj_call_init(tdata, 1, argv);
-    return tdata;
+    keyczar::Signer* signer = keyczar::Signer::Read(RSTRING_PTR(location));
+    DATA_PTR(self) = signer;
+    return self;
   }
 
-  static VALUE keyczar_crypter_new(VALUE klass, VALUE location)
+  static VALUE keyczar_crypter_initialize(VALUE self, VALUE location)
   {
-    VALUE argv[1];
-    keyczar::Crypter* ptr = keyczar::Crypter::Read(RSTRING_PTR(location));
-    VALUE tdata = Data_Wrap_Struct(klass, 0, crypter_free, ptr);
-    argv[0] = location;
-    rb_obj_call_init(tdata, 1, argv);
-    return tdata;
+    keyczar::Crypter* crypter = keyczar::Crypter::Read(RSTRING_PTR(location));
+    DATA_PTR(self) = crypter;
+    return self;
   }
 
   static VALUE keyczar_encrypt(VALUE self, VALUE plaintext){
@@ -96,5 +77,22 @@ extern "C" {
     bool result=signer->Verify(RSTRING_PTR(text), RSTRING_PTR(signature));
 
     return result ? Qtrue : Qfalse;
+  }
+
+  void Init_keyczar_ruby() {
+    m_Keyczar = rb_define_module("Keyczar");
+    c_Signer = rb_define_class_under(m_Keyczar, "Signer", rb_cObject);
+    c_Crypter = rb_define_class_under(m_Keyczar, "Crypter", rb_cObject);
+
+    rb_define_method(c_Crypter, "encrypt", (ruby_method*) &keyczar_encrypt, 1);
+    rb_define_method(c_Crypter, "decrypt", (ruby_method*) &keyczar_decrypt, 1);
+
+    rb_define_method(c_Signer, "sign", (ruby_method*) &keyczar_sign, 1);
+    rb_define_method(c_Signer, "verify", (ruby_method*) &keyczar_verify, 2);
+
+    rb_define_alloc_func(c_Crypter, keyczar_crypter_alloc);
+    rb_define_alloc_func(c_Signer, keyczar_signer_alloc);
+    rb_define_method(c_Crypter, "initialize", (ruby_method*) &keyczar_crypter_initialize, 1);
+    rb_define_method(c_Signer, "initialize", (ruby_method*) &keyczar_signer_initialize, 1);
   }
 }
